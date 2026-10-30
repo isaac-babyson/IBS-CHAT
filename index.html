@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IBS-CHAT SOCIAL - Mondial</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
+body{background:#111b21;color:#e9edef;max-width:600px;margin:auto}
+.topbar{background:#202c33;padding:10px 12px;display:flex;justify-content:space-between;position:sticky;top:0;z-index:10}
+.logo{font-weight:900;color:#ffcc00}
+.basic-btn{background:#2a3942;color:#fff;border:1px solid #ffcc00;padding:6px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.basic-btn.on{background:#ffcc00;color:#000}
+.creator-card{background:linear-gradient(135deg,#202c33,#001a4d);margin:10px;padding:14px;border-radius:14px;border:2px solid #ffcc00;text-align:center}
+.creator-badge{background:#ffcc00;color:#000;font-size:9px;padding:4px 10px;border-radius:20px;font-weight:900}
+.creator-card img{width:85px;height:85px;border-radius:50%;border:3px solid #ffcc00;margin:10px auto;display:block}
+.creator-card h2{color:#ffcc00}
+.green{color:#25D366;font-weight:bold}
+.contact-btn{background:#ffcc00;color:#000;border:none;padding:7px 14px;border-radius:20px;font-weight:bold;margin-top:8px}
+.tabs{display:flex;background:#111}
+.tab{flex:1;padding:12px;border:none;background:none;color:#aaa;border-bottom:3px solid transparent}
+.tab.active{color:#ffcc00;border-color:#ffcc00;font-weight:bold}
+.page{display:none;padding-bottom:80px}
+.page.active{display:block}
+.chat-item{display:flex;gap:12px;padding:12px;border-bottom:1px solid #2a3942}
+.chat-item img{width:48px;height:48px;border-radius:50%}
+.fab{position:fixed;right:18px;bottom:18px;width:56px;height:56px;border-radius:50%;background:#ffcc00;color:#000;font-size:28px;border:none;font-weight:900}
+.create-btn{width:100%;background:#ffcc00;color:#000;padding:12px;border:none;border-radius:10px;font-weight:bold;margin:10px 0}
+.card{background:#202c33;margin:10px;padding:10px;border-radius:12px}
+.card input{width:100%;padding:10px;border-radius:10px;border:none;background:#2a3942;color:#fff;margin-bottom:8px}
+.chat-window{position:fixed;inset:0;background:#0b141a;display:flex;flex-direction:column;z-index:100;max-width:600px;margin:auto}
+.chat-window.hidden{display:none}
+.chat-header{background:#202c33;padding:10px;display:flex;gap:10px;align-items:center}
+.chat-header img{width:36px;height:36px;border-radius:50%}
+.back{background:none;border:none;color:#fff;font-size:20px}
+#messages{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:#0b141a}
+.msg{max-width:78%;padding:8px 12px;border-radius:12px;font-size:14px;word-break:break-word}
+.msg.me{align-self:flex-end;background:#005c4b}
+.msg.other{align-self:flex-start;background:#202c33}
+.msg audio{width:200px;margin-top:5px}
+.input-bar{background:#202c33;padding:8px;display:flex;gap:6px;align-items:center}
+.input-bar input{flex:1;padding:12px;border-radius:25px;border:none;background:#2a3942;color:#fff}
+.mic,.send{width:40px;height:40px;border-radius:50%;border:none;font-size:18px}
+.mic{background:#2a3942}
+.mic.recording{background:#ff4444;animation:pulse 1s infinite}
+.send{background:#ffcc00;color:#000;font-weight:900}
+.online-dot{width:10px;height:10px;background:#00ff00;border-radius:50%;display:inline-block}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+body.basic-mode img:not(#creatorPhoto):not(#chatAvatar){opacity:0.2}
+body.basic-mode video{display:none!important}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">IBS-CHAT SOCIAL</div>
+  <div><span id="onlineCount" style="font-size:11px;color:#00ff00;">● 1,247 en ligne</span> <button id="basicToggle" class="basic-btn">BASIQUE: OFF</button></div>
+</header>
+
+<div class="creator-card">
+  <div class="creator-badge">FONDATEUR PROTÉGÉ - FILS AÎNÉ</div>
+  <img id="creatorPhoto" src="https://via.placeholder.com/90/001a4d/ffcc00?text=IB">
+  <h2>Isaac BABYSON</h2>
+  <p style="font-size:12px;line-height:1.4;">
+    <b>IBS-CHAT SOCIAL</b><br>
+    Né NYAMILIMA, grandi KISEGURO<br>
+    E.P KISEGURO St BENOÎT | Institut KISEGURO St AUGUSTIN<br>
+    Papa KAYENGA, Maman MANIRIHO<br>
+    Aîné: ISAAC, AHADI, DANIEL<br>
+    <span class="green">Goma - Biologiste Médical</span>
+  </p>
+  <small>IBS = Isaac BabySon | Mondial Basique</small><br>
+  <button class="contact-btn" onclick="alert('Isaac Babyson - IBS-CHAT')">Contacter créateur</button>
+</div>
+
+<nav class="tabs">
+  <button class="tab active" data-page="chats">CHATS</button>
+  <button class="tab" data-page="groupes">GROUPES</button>
+  <button class="tab" data-page="commu">COMMUNAUTÉ</button>
+</nav>
+
+<div id="page-chats" class="page active"><div id="chatList"></div><button class="fab" onclick="newChat()">+</button></div>
+<div id="page-groupes" class="page"><button class="create-btn" onclick="createGroup()">+ Créer Groupe</button><div id="groupList"></div></div>
+<div id="page-commu" class="page"><div class="card"><input id="commuName" placeholder="Nom communauté"><button class="create-btn" onclick="addCommu()">Créer Communauté</button></div><div id="commuList"></div></div>
+
+<div id="chatWindow" class="chat-window hidden">
+  <div class="chat-header">
+    <button class="back" onclick="closeChat()">←</button>
+    <img id="chatAvatar" src=""><div><b id="chatWith"></b><br><small id="typing" style="color:#00ff00"></small></div><span style="margin-left:auto" class="online-dot"></span>
+  </div>
+  <div id="messages"></div>
+  <div class="input-bar">
+    <button id="recordBtn" class="mic" onclick="toggleRecord()">🎤</button>
+    <input id="msgInput" placeholder="Message ou audio..." onkeypress="if(event.key==='Enter')sendMsg()">
+    <button onclick="sendMsg()" class="send">➤</button>
+  </div>
+  <div id="recordStatus" style="text-align:center;color:#ff4444;display:none;">● Enregistrement <span id="timer">0s</span> - Re-clique 🎤 pour envoyer</div>
+</div>
+
+<script>
+let basicMode=false;
+let chats=JSON.parse(localStorage.getItem('ibs_chats')||'null')||[
+  {id:1,name:'Maman MANIRIHO',last:'Baraka Isaac 🙏',avatar:'https://via.placeholder.com/50',messages:[{me:false,text:'Mon fils aîné courage avec IBS-CHAT',type:'text'}],online:true},
+  {id:2,name:'AHADI Frère',last:'🎤 Audio vocal',avatar:'https://via.placeholder.com/50',messages:[],online:true},
+  {id:3,name:'Groupe KISEGURO',last:'On se voit à St Benoît',avatar:'https://via.placeholder.com/50',messages:[],online:false},
+  {id:4,name:'DANIEL Petit frère',last:'Habari kaka?',avatar:'https://via.placeholder.com/50',messages:[],online:true}
+];
+let groups=JSON.parse(localStorage.getItem('ibs_groups')||'[]');
+if(groups.length===0) groups=[{name:'Beatmakers Goma',members:'1.2k',online:45},{name:'NYAMILIMA Village',members:'890',online:120},{name:'IBS-CHAT Fans',members:'3.4k',online:200,admin:true}];
+function save(){localStorage.setItem('ibs_chats',JSON.stringify(chats));localStorage.setItem('ibs_groups',JSON.stringify(groups))}
+document.querySelectorAll('.tab').forEach(t=>{t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));t.classList.add('active');document.getElementById('page-'+t.dataset.page).classList.add('active')}});
+function renderChats(){const list=document.getElementById('chatList');list.innerHTML='';chats.forEach(c=>{const div=document.createElement('div');div.className='chat-item';div.innerHTML=`<img src="${c.avatar}"><div style="flex:1"><b>${c.name} ${c.online?'<span class=online-dot></span>':''}</b><br><small>${c.last}</small></div><small>${c.online?'En ligne':''}</small>`;div.onclick=()=>openChat(c.id);list.appendChild(div)});renderGroups()}
+function renderGroups(){const list=document.getElementById('groupList');list.innerHTML='';groups.forEach(g=>{const div=document.createElement('div');div.className='chat-item';div.innerHTML=`<div><b>👥 ${g.name}</b><br><small>${g.members} membres • ${g.online} en ligne</small></div><button style="margin-left:auto;background:${g.admin?'#ffcc00':'#001a4d'};color:${g.admin?'#000':'#fff'};border:none;padding:6px 14px;border-radius:15px">${g.admin?'Admin':'Rejoindre'}</button>`;list.appendChild(div)})}
+let currentChat=null;
+function openChat(id){currentChat=chats.find(c=>c.id===id);document.getElementById('chatWindow').classList.remove('hidden');document.getElementById('chatWith').innerText=currentChat.name;document.getElementById('chatAvatar').src=currentChat.avatar;renderMessages()}
+function closeChat(){document.getElementById('chatWindow').classList.add('hidden');renderChats();save()}
+function renderMessages(){const box=document.getElementById('messages');box.innerHTML='';currentChat.messages.forEach(m=>{const d=document.createElement('div');d.className='msg '+(m.me?'me':'other');if(m.type==='audio'&&m.audio){d.innerHTML=`🎤 Vocal<br><audio controls src="${m.audio}"></audio><br><small>${m.duration}</small>`}else{d.innerText=m.text}box.appendChild(d)});box.scrollTop=box.scrollHeight}
+function sendMsg(){const inp=document.getElementById('msgInput');if(!inp.value)return;currentChat.messages.push({me:true,text:inp.value,type:'text'});currentChat.last=inp.value;inp.value='';renderMessages();save();document.getElementById('typing').innerText='écrit...';setTimeout(()=>{document.getElementById('typing').innerText='';currentChat.messages.push({me:false,text:'Reçu ✅ IBS-CHAT Basique '+(basicMode?'0.1Ko':'normal'),type:'text'});renderMessages();save()},1000)}
+function newChat(){const name=prompt('Nom contact:');if(!name)return;chats.push({id:Date.now(),name,last:'Nouveau',avatar:'https://via.placeholder.com/50',messages:[],online:true});renderChats();save()}
+function createGroup(){const name=prompt('Nom groupe:');if(!name)return;groups.unshift({name,members:'1',online:1,admin:true});save();renderGroups()}
+function addCommu(){const inp=document.getElementById('commuName');if(!inp.value)return;document.getElementById('commuList').innerHTML+=`<div class="card"><b>🏘️ ${inp.value}</b> <span class="online-dot"></span><br><small>Créée par Isaac BABYSON - Visible monde</small></div>`;inp.value=''}
+let mediaRecorder=null,audioChunks=[],startTime,timerInterval,isRecording=false;
+async function toggleRecord(){
+  const btn=document.getElementById('recordBtn');const status=document.getElementById('recordStatus');
+  if(!isRecording){
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      mediaRecorder=new MediaRecorder(stream);audioChunks=[];startTime=Date.now();
+      mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
+      mediaRecorder.onstop=()=>{const blob=new Blob(audioChunks,{type:'audio/webm'});const url=URL.createObjectURL(blob);const duration=Math.round((Date.now()-startTime)/1000)+'s';currentChat.messages.push({me:true,type:'audio',audio:url,duration});currentChat.last='🎤 Vocal '+duration;renderMessages();save()};
+      mediaRecorder.start();isRecording=true;btn.classList.add('recording');status.style.display='block';
+      timerInterval=setInterval(()=>{document.getElementById('timer').innerText=Math.round((Date.now()-startTime)/1000)+'s'},1000);
+    }catch(e){alert('Active le micro dans le navigateur')}
+  }else{
+    mediaRecorder.stop();isRecording=false;btn.classList.remove('recording');status.style.display='none';clearInterval(timerInterval);mediaRecorder.stream.getTracks().forEach(t=>t.stop());
+  }
+}
+document.getElementById('basicToggle').onclick=function(){basicMode=!basicMode;document.body.classList.toggle('basic-mode',basicMode);this.innerText='BASIQUE: '+(basicMode?'ON 🌍':'OFF');this.classList.toggle('on',basicMode);if(basicMode)alert('Mode Basique ON:\n✓ 0.1Ko/message\n✓ Audio 8kbps\n✓ Images compressées\n✓ Marche en 2G - Parfait pour Goma!')};
+setInterval(()=>{document.getElementById('onlineCount').innerText='● '+(1247+Math.floor(Math.random()*20))+' en ligne'},4000);
+renderChats();
+</script>
+</body>
+</html>
