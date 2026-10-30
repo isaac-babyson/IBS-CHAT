@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "IBS-CHAT SOCIAL",
+    "slug": "ibs-chat-social",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "android": {
+      "package": "com.isaacbabyson.ibschatsocial",
+      "permissions": ["RECORD_AUDIO"]
+    },
+    "plugins": [
+      ["expo-image-picker", {"photosPermission": "IBS-CHAT SOCIAL utilise vos photos uniquement si vous choisissez une image de profil."}],
+      ["expo-av", {"microphonePermission": "Autorisez le microphone pour enregistrer des messages vocaux."}]
+    ],
+    "web": {"bundler": "metro"}
+  }
+}
